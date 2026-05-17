@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytica - Premium Video Insights</title>
+    <meta name="description" content="Advanced analysis for YouTube and Instagram videos with revenue estimation and engagement tracking.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script type="module" crossorigin src="/assets/index-DmdUY1V7.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CN-POEzB.css">
+  </head>
+  <body>
+    <div id="login-container" class="login-wrapper">
+      <div class="login-card animate-fade">
+        <div class="logo" style="justify-content: center; font-size: 2.5rem; margin-bottom: 1rem;">
+          <i data-lucide="bar-chart-3"></i>
+          Analytica
+        </div>
+        <h1>Welcome Back</h1>
+        <p>Sign in to access premium video analytics and insights.</p>
+        
+        <div class="google-btn-container">
+          <div id="google-signin-btn"></div>
+        </div>
+        
+        <div class="login-footer">
+          By signing in, you agree to our Terms of Service
+        </div>
+      </div>
+    </div>
+
+    <div id="app-container" class="app-container" style="display: none;">
+      <header>
+        <div class="logo">
+          <i data-lucide="bar-chart-3"></i>
+          Analytica
+        </div>
+        
+        <div id="user-profile" class="user-profile">
+          <img id="user-avatar" src="" alt="Avatar" class="mini-avatar">
+          <span id="user-name">User Name</span>
+          <button id="logout-btn" class="settings-btn" title="Logout">
+            <i data-lucide="log-out"></i>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <div class="tabs-container">
+          <button class="tab-btn active" id="tab-single">Single Video</button>
+          <button class="tab-btn" id="tab-compare">Compare Videos</button>
+        </div>
+
+        <section class="search-section">
+          <h1 id="search-title">Analyze any Video</h1>
+          <p style="color: var(--text-muted); text-align: center; max-width: 500px;" id="search-desc">
+            Paste a YouTube link or Instagram Reel URL to get deep insights into performance, revenue, and channel stats.
+          </p>
+          
+          <div class="input-group" id="single-input-group">
+            <input type="text" id="video-url" placeholder="https://www.youtube.com/watch?v=..." />
+            <button class="analyze-btn" id="analyze-trigger">
+              <i data-lucide="search"></i>
+            </button>
+          </div>
+
+          <div class="compare-inputs" id="compare-input-group" style="display: none;">
+            <input type="text" id="video-url-1" placeholder="First Video URL" class="compare-input" />
+            <input type="text" id="video-url-2" placeholder="Second Video URL" class="compare-input" />
+            <button class="save-btn" id="analyze-compare-trigger" style="width: auto; padding: 0 2rem; margin-top: 1rem;">Compare</button>
+          </div>
+
+          <div class="recent-searches-container" style="display: none;" id="recent-searches-container">
+            <h3 style="font-size: 0.875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; text-align: left; width: 100%; max-width: 600px;">Recent Searches</h3>
+            <div class="recent-searches" id="recent-searches"></div>
+          </div>
+
+          <div id="error-msg" style="color: #ef4444; font-size: 0.875rem; display: none; margin-top: 1rem;"></div>
+
+          <div class="loading-spinner" id="loader"></div>
+        </section>
+
+        <div id="dashboard" class="dashboard-grid animate-fade">
+          <!-- Video Overview -->
+          <div class="card overview-section">
+            <div class="overview-header">
+              <img id="vid-thumb" src="" class="video-thumbnail" alt="Thumbnail">
+              <div class="video-info">
+                <div class="card-title"><i data-lucide="play-circle"></i> Video Overview</div>
+                <h2 id="vid-title">Video Title</h2>
+                <p id="vid-date" class="stat-label">Posted on ...</p>
+              </div>
+            </div>
+            
+            <div class="grid-2">
+              <div class="card" style="background: rgba(255,255,255,0.03)">
+                <div class="card-title">Views</div>
+                <div class="stat-value" id="vid-views">0</div>
+              </div>
+              <div class="card" style="background: rgba(255,255,255,0.03)">
+                <div class="card-title">Estimated Revenue</div>
+                <div class="stat-value" id="vid-revenue" style="color: var(--success)">$0.00</div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="views-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="card">
+            <div class="card-title"><i data-lucide="heart"></i> Engagement</div>
+            <div class="stat-value" id="vid-likes">0</div>
+            <div class="stat-label">Likes Total</div>
+            <div style="margin-top: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;">
+              <span style="color: var(--accent-secondary); font-weight: bold;" id="vid-eng-rate">0%</span>
+              <span class="stat-label"> Engagement Rate</span>
+            </div>
+          </div>
+
+          <!-- Channel Overview -->
+          <div class="card overview-section">
+            <div class="card-title"><i data-lucide="user"></i> Channel Overview</div>
+            <div class="channel-overview">
+              <img id="chan-avatar" src="" class="channel-avatar" alt="Avatar">
+              <div>
+                <h2 id="chan-name">Channel Name</h2>
+                <p id="chan-owner" class="stat-label">Owner: ...</p>
+                <p id="chan-date" class="stat-label">Joined: ...</p>
+              </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 1.5rem;">
+              <div class="card" style="background: rgba(255,255,255,0.03)">
+                <div class="card-title">Subscribers</div>
+                <div class="stat-value" id="chan-subs">0</div>
+              </div>
+              <div class="card" style="background: rgba(255,255,255,0.03)">
+                <div class="card-title">Monthly Est. Earnings</div>
+                <div class="stat-value" id="chan-revenue" style="color: var(--accent-secondary)">$0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compare Dashboard -->
+        <div id="compare-dashboard" class="dashboard-grid animate-fade" style="display: none; grid-template-columns: 1fr 1fr;">
+          <!-- Video 1 -->
+          <div class="card overview-section" style="grid-column: span 1;">
+            <div class="card-title" style="color: var(--accent-primary);">Video 1</div>
+            <div class="overview-header" style="flex-direction: column; align-items: flex-start;">
+              <img id="comp-vid-thumb-1" src="" class="video-thumbnail" style="width: 100%; height: auto;" alt="Thumbnail">
+              <div class="video-info" style="margin-top: 1rem;">
+                <h2 id="comp-vid-title-1" style="font-size: 1.2rem;">Video Title</h2>
+                <p id="comp-vid-date-1" class="stat-label">Posted on ...</p>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top: 1rem;">
+              <div class="card" style="background: rgba(255,255,255,0.03); padding: 1rem;">
+                <div class="card-title">Views</div>
+                <div class="stat-value" id="comp-vid-views-1" style="font-size: 1.5rem;">0</div>
+              </div>
+              <div class="card" style="background: rgba(255,255,255,0.03); padding: 1rem;">
+                <div class="card-title">Revenue</div>
+                <div class="stat-value" id="comp-vid-revenue-1" style="font-size: 1.5rem; color: var(--success)">$0</div>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top: 1rem;">
+              <div class="card" style="background: rgba(255,255,255,0.03); padding: 1rem;">
+                <div class="card-title">Likes</div>
+                <div class="stat-value" id="comp-vid-likes-1" style="font-size: 1.5rem;">0</div>
+              </div>
+              <div class="card" style="background: rgba(255,255,255,0.03); padding: 1rem;">
+                <div class="card-title">Eng. Rate</div>
+                <div class="stat-value" id="comp-vid-eng-rate-1" style="font-size: 1.5rem; color: var(--accent-secondary)">0%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video 2 -->
+          <div class="card overview-section" style="grid-column: span 1;">
+            <div class="card-title" style="color: var(--accent-secondary);">Video 2</div>
+            <div class="overview-header" style="flex-direction: column; align-items: flex-start;">
+              <img id="comp-vid-thumb-2" src="" class="video-thumbnail" style="width: 100%; height: auto;" alt="Thumbnail">
+              <div class="video-info" style="margin-top: 1rem;">
+                <h2 id="comp-vid-title-2" style="font-size: 1.2rem;">Video Title</h2>
+                <p id="comp-vid-date-2" class="stat-label">Posted on ...</p>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top: 1rem;">
+              <div class="card" style="background: rgba(255,255,255,0.03); padding: 1rem;">
+                <div class="card-title">Views</div>
+                <div class="stat-value" id="comp-vid-views-2" style="font-size: 1.5rem;">0</div>
+              </div>
+              <div class="card" style="background: rgba(255,255,255,0.03); padding: 1rem;">
+                <div class="card-title">Revenue</div>
+                <div class="stat-value" id="comp-vid-revenue-2" style="font-size: 1.5rem; color: var(--success)">$0</div>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top: 1rem;">
+              <div class="card" style="background: rgba(255,255,255,0.03); padding: 1rem;">
+                <div class="card-title">Likes</div>
+                <div class="stat-value" id="comp-vid-likes-2" style="font-size: 1.5rem;">0</div>
+              </div>
+              <div class="card" style="background: rgba(255,255,255,0.03); padding: 1rem;">
+                <div class="card-title">Eng. Rate</div>
+                <div class="stat-value" id="comp-vid-eng-rate-2" style="font-size: 1.5rem; color: var(--accent-secondary)">0%</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Compare Chart -->
+          <div class="card overview-section" style="grid-column: 1 / -1;">
+            <div class="card-title">Comparison Chart (Cumulative Views)</div>
+            <div class="chart-container">
+              <canvas id="compare-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+
+
+    </div>
+  </body>
+</html>
